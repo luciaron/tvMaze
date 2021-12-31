@@ -23,7 +23,7 @@ async function searchShows(query) {
   const url = 'https://api.tvmaze.com/search/shows'
   const showsRes = await axios.get(url, {params: {q: query}});
   const shows = showsRes.data;
-  console.log(shows);
+  // console.log(shows);
   return shows;
   // return [ // hardcoded example show response object
   //   {
@@ -54,13 +54,18 @@ function populateShows(shows) {
               <h5 class="card-title"><b>${show.show.name}</b></h5>
               <img class="card-img-top" src="${show.show.image.medium}">
               <p class="card-text">${show.show.summary}</p>
-              <button class="episodes" data-show-id"${show.show.id}>See Episodes</button>
+              <button class="episodes" data-show-id="${show.show.id}">See Episodes</button>
             </div>
           </div>
         </div>
         `);
 
     $showsList.append($item);
+    // const epsBtn = document.querySelector(`button[data-show-id="${show.show.id}"]`);
+    // epsBtn.addEventListener('click', async function handleEpsClick (e) {
+    //   let episodes = await searchEpisodes(show.show.id);
+    //   populateEpisodes(episodes);
+    // })
     } else {                       //added this conditional because it would break the code if there was non image, so now it doesn't create an image if there isn't one in the response obj
       let $item = $(
         `<div class="col-md-6 col-lg-3 Show" data-show-id="${show.show.id}">
@@ -69,7 +74,7 @@ function populateShows(shows) {
               <h5 class="card-title"><b>${show.show.name}</b></h5>
               <p><em>no image available :(</em></p>
               <p class="card-text">${show.show.summary}</p>
-              <button class="episodes" data-show-id"${show.show.id}>See Episodes</button>
+              <button class="episodes" data-show-id="${show.show.id}">See Episodes</button>
             </div>
           </div>
         </div>
@@ -78,6 +83,14 @@ function populateShows(shows) {
     $showsList.append($item);
     }
   }
+  $showsList.on('click', async function handleEpsBtnClick(e){
+    if (e.target.tagName ==='BUTTON') {
+      console.log('clicked', e.target.getAttribute('data-show-id'));
+      let epsArr = await searchEpisodes(e.target.getAttribute('data-show-id'));
+      console.log(epsArr);
+      populateEpisodes(epsArr)
+    }
+  })
 }
 
 
@@ -104,25 +117,27 @@ $("#search-form").on("submit", async function handleSearch (evt) {
  *      { id, name, season, number }
  */
 
-async function getEpisodes(id) {
+async function searchEpisodes(id) {
   // TODO: get episodes from tvmaze
   //       you can get this by making GET request to
   //       http://api.tvmaze.com/shows/SHOW-ID-HERE/episodes
   const epsRes = await axios.get(`https://api.tvmaze.com/shows/${id}/episodes`);
   const eps = epsRes.data;
-  console.log(eps);
+  // console.log(eps);
   return eps;
   // TODO: return array-of-episode-info, as described in docstring above
 }
 
-function populateEpisodes(eps) {
+async function populateEpisodes(eps) {
   const $cardBody = $('div.card-body');
-  const epsList = $cardBody.append('ul')
+  const $epsList = $(`<ul></ul>`);
+  $cardBody.append($epsList)
   for (let i=0; i<eps.length; i++) {
+    console.log(eps[i].name)
     let $epLI = $(
-      `<li><em>${eps.i.name}</em></li>`
+      `<li><em>${eps[i].name}</em></li>`
     )
-    epsList.append($epLI);
+    $epsList.append($epLI);
   }
   // for (let show of shows) {
   //   if (show.show.image){
