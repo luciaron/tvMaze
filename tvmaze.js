@@ -42,7 +42,7 @@ async function searchShows(query) {
  */
 
 function populateShows(shows) {
-  const $showsList = $("#shows-list");
+  // const $showsList = $("#shows-list");
   $showsList.empty();
 
   for (let show of shows) {
@@ -83,15 +83,19 @@ function populateShows(shows) {
     $showsList.append($item);
     }
   }
-  $showsList.on('click', async function handleEpsBtnClick(e){
-    if (e.target.tagName ==='BUTTON') {
-      console.log('clicked', e.target.getAttribute('data-show-id'));
-      let epsArr = await searchEpisodes(e.target.getAttribute('data-show-id'));
-      console.log(epsArr);
-      populateEpisodes(epsArr)
-    }
-  })
 }
+
+const $showsList = $("#shows-list");
+
+$showsList.on('click', async function handleEpsBtnClick(e){
+  if (e.target.tagName ==='BUTTON') {
+    console.log('clicked', e.target.getAttribute('data-show-id'));
+    let show = e.target.getAttribute('data-show-id');
+    let epsArr = await searchEpisodes(e.target.getAttribute('data-show-id'));
+    console.log(epsArr);
+    populateEpisodes(epsArr, show)
+  }
+})
 
 
 /** Handle search form submission:
@@ -128,10 +132,10 @@ async function searchEpisodes(id) {
   // TODO: return array-of-episode-info, as described in docstring above
 }
 
-async function populateEpisodes(eps) {
-  const $cardBody = $('div.card-body');
+async function populateEpisodes(eps, id) {
+  const $selectedCardBody = $(`div.card-body[data-show-id="${id}"]`);
   const $epsList = $(`<ul></ul>`);
-  $cardBody.append($epsList)
+  $selectedCardBody.append($epsList)
   for (let i=0; i<eps.length; i++) {
     console.log(eps[i].name)
     let $epLI = $(
@@ -139,21 +143,4 @@ async function populateEpisodes(eps) {
     )
     $epsList.append($epLI);
   }
-  // for (let show of shows) {
-  //   if (show.show.image){
-  //     let $item = $(
-  //       `<div class="col-md-6 col-lg-3 Show" data-show-id="${show.show.id}">
-  //         <div class="card" data-show-id="${show.show.id}">
-  //           <div class="card-body" data-show-id="${show.show.id}">
-  //             <h5 class="card-title"><b>${show.show.name}</b></h5>
-  //             <img class="card-img-top" src="${show.show.image.medium}">
-  //             <p class="card-text">${show.show.summary}</p>
-  //             <button class="episodes" data-show-id"${show.show.id}>See Episodes</button>
-  //           </div>
-  //         </div>
-  //       </div>
-  //       `);
-
-  //   $showsList.append($item);
-  //   }
 }
