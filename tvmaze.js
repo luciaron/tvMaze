@@ -78,7 +78,7 @@ function populateShows(shows) {
             </div>
           </div>
         </div>
-        `);
+        `);                               //don't need the data-show-id attribute in everything; can just put it in the grandest parent and refer to that parent
 
     $showsList.append($item);
     }
